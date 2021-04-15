@@ -41,6 +41,13 @@ public class paint{
     }
     
     /**
+     * Slider for line width from 1-20
+     */
+    public void chooseWidth() {
+        
+    }
+    
+    /**
      * Color Chooser
      */
     
