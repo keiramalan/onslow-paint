@@ -19,14 +19,44 @@ public class paint{
     private double startX, startY; // fields to remember press position
     private Color currentColor = Color.black;
     
+    // t/f for which mode its in which will be changed by a button
+    boolean createOval = true;
+    boolean drawLine = false;
+    boolean fillShape = false;
+    
     /**      */
     public paint(){
     UI.initialise();
     UI.addButton("Quit", UI::quit);
     }
-
+    
     /**
-     * Draw a press and release line
+     * Button to change the shape created from a square to an oval
+     */
+    public void changeOval() {
+        // set mode to oval
+        createOval = true;
+        drawLine = false;
+    }
+    
+    /**
+     * Button to change the shape from oval to square
+     */
+    public void changeRect () {
+        //set mode to oval
+        createOval = false;
+        drawLine = false;
+    }
+    
+    /**
+     * Method to set draw mode to line
+     */
+    public void changeLine() {
+        drawLine = true;
+    }
+    
+    /**
+     * Draw a press and release square/oval depending on T/F
      */
     
     public void doMouse(String action, double x, double y) {
@@ -36,14 +66,57 @@ public class paint{
             this.startY = y;
         } 
         else if (action.equals("released")) {
-            UI.drawLine(this.startX, this.startY, x, y);
+            // create a line if user pressed line button
+            if (drawLine) {
+                UI.drawLine(this.startX, this.startY, x, y);
+            }
+            else {
+                // otherwise draw oval/rectangle depending on button input
+                if (createOval) {
+                    UI.drawOval(this.startX, this.startY, x, y);
+                }
+                else {
+                    UI.drawRect(this.startX, this.startY, x, y);
+                }
+            }
         }
     }
     
     /**
      * Slider for line width from 1-20
      */
-    public void chooseWidth() {
+    public void chooseWidth(double input) {
+        // set input to line width
+        UI.setLineWidth(input);
+    }
+    
+    /**
+     * Clear graphics pane
+     */
+    public void clearScreen() {
+        UI.clearGraphics();
+    }
+    
+    /**
+     * Choose random color
+     */
+    public void doRandomColor() {
+        // select random color
+        Color col = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+        UI.setColor(col);
+    }
+    
+    /**
+     * Method to select fill
+     */
+    public void selectFill() {
+        
+    }
+    
+    /** Method to select outline
+     * 
+     */
+    public void selectOutline() {
         
     }
     
@@ -58,9 +131,28 @@ public class paint{
     
     public static void main(String[] args){
         paint obj = new paint();
+        // set inital line width to 15
+        UI.setLineWidth(15);
+        
         // get input for line width
         UI.setMouseListener(obj::doMouse);
-        UI.addButton("Color", obj::doChooseColor);
+        
+        // buttons to choose or randomly assign color
+        UI.addButton("Choose Color", obj::doChooseColor);
+        UI.addButton("Choose Random Color", obj::doRandomColor);
+        
+        // create slider for line width
+        UI.addSlider("Line Width", 1, 30, obj::chooseWidth);
+        
+        // create buttons for rect or oval
+        UI.addButton("Oval", obj::changeOval);
+        UI.addButton("Rectangle", obj::changeRect);
+        
+        // create button to draw line
+        UI.addButton("Draw Line", obj::changeLine);
+        
+        // create clear button to wipe screen
+        UI.addButton("Clear", UI::clearGraphics);
     }
 
 }
