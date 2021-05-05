@@ -60,6 +60,9 @@ public class paint{
      */
     
     public void doMouse(String action, double x, double y) {
+        
+        double shapeWidth, shapeHeight;
+        // set starting co-ords
         if (action.equals("pressed")) {
             // set starting position
             this.startX = x;
@@ -72,11 +75,24 @@ public class paint{
             }
             else {
                 // otherwise draw oval/rectangle depending on button input
+                // set shape widths
+                if ((x-startX >= 0) && (y-startY >= 0)) { // set width and height
+                    shapeWidth = x-startX;
+                    shapeHeight = y-startY;
+                }
+                    
+                else { // reverse sums to create negative box
+                    shapeWidth = startX-x;
+                    shapeHeight = startY-x;
+                }
+                
                 if (createOval) {
-                    UI.drawOval(this.startX, this.startY, x, y);
+                    //change to width/height
+                    UI.drawOval(this.startX, this.startY, shapeWidth, shapeHeight);
                 }
                 else {
-                    UI.drawRect(this.startX, this.startY, x, y);
+                    UI.drawRect(this.startX, this.startY, shapeWidth, shapeHeight);
+                    //change to width/height
                 }
             }
         }
