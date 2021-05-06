@@ -14,15 +14,16 @@ import javax.swing.JColorChooser;
 
 /** Create MS Paint
  */
-public class paint{
+public class paint {
     // fields
     private double startX, startY; // fields to remember press position
     private Color currentColor = Color.black;
+    private final double CIRCLESIZE = 25;
     
     // t/f for which mode its in which will be changed by a button
     boolean createOval = true;
     boolean drawLine = false;
-    boolean fillShape = false;
+    boolean drawCircle = false;
     
     /**      */
     public paint(){
@@ -37,15 +38,27 @@ public class paint{
         // set mode to oval
         createOval = true;
         drawLine = false;
+        drawCircle = false;
+    }
+    
+    /**
+     * Button to draw circle
+     */
+    public void changeCircle() {
+        // set mode to draw circle
+        drawCircle = true;
+        createOval = false;
+        drawLine = false;
     }
     
     /**
      * Button to change the shape from oval to square
      */
     public void changeRect () {
-        //set mode to oval
+        //set mode to square
         createOval = false;
         drawLine = false;
+        drawCircle = false;
     }
     
     /**
@@ -53,6 +66,7 @@ public class paint{
      */
     public void changeLine() {
         drawLine = true;
+        drawCircle = false;
     }
     
     /**
@@ -60,8 +74,10 @@ public class paint{
      */
     
     public void doMouse(String action, double x, double y) {
-        
+        double placeholderX;
+        double placeholderY;
         double shapeWidth, shapeHeight;
+        double radius, circleX, circleY;
         // set starting co-ords
         if (action.equals("pressed")) {
             // set starting position
@@ -73,18 +89,32 @@ public class paint{
             if (drawLine) {
                 UI.drawLine(this.startX, this.startY, x, y);
             }
+            else if (drawCircle) {
+                // set radius
+                radius = CIRCLESIZE/2;
+                // find center of circle
+                circleX = startX - radius;
+                circleY = startY - radius;
+                UI.fillOval(circleX, circleY, CIRCLESIZE, CIRCLESIZE);
+            }
             else {
                 // otherwise draw oval/rectangle depending on button input
-                // set shape widths
-                if ((x-startX >= 0) && (y-startY >= 0)) { // set width and height
-                    shapeWidth = x-startX;
-                    shapeHeight = y-startY;
+   
+                if (x-startX < 0) { // reverse sums to create negative box swap variables
+                    placeholderX = startX;
+                    startX = x;
+                    x = placeholderX;
                 }
-                    
-                else { // reverse sums to create negative box
-                    shapeWidth = startX-x;
-                    shapeHeight = startY-x;
+                
+                if (y-startY < 0) {
+                    placeholderY = startY;
+                    startY = y;
+                    y = placeholderY;
                 }
+                
+                // set width and height
+                shapeWidth = x-startX;
+                shapeHeight = y-startY;
                 
                 if (createOval) {
                     //change to width/height
@@ -123,20 +153,6 @@ public class paint{
     }
     
     /**
-     * Method to select fill
-     */
-    public void selectFill() {
-        
-    }
-    
-    /** Method to select outline
-     * 
-     */
-    public void selectOutline() {
-        
-    }
-    
-    /**
      * Color Chooser
      */
     
@@ -160,9 +176,10 @@ public class paint{
         // create slider for line width
         UI.addSlider("Line Width", 1, 30, obj::chooseWidth);
         
-        // create buttons for rect or oval
-        UI.addButton("Oval", obj::changeOval);
+        // create buttons for rect or oval or circle
+        UI.addButton("Custom Oval", obj::changeOval);
         UI.addButton("Rectangle", obj::changeRect);
+        UI.addButton("Big Dot", obj::changeCircle);
         
         // create button to draw line
         UI.addButton("Draw Line", obj::changeLine);
